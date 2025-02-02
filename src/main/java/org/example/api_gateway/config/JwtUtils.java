@@ -1,4 +1,4 @@
-package org.example.gateway.config;
+package org.example.api_gateway.config;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;

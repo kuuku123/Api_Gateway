@@ -18,6 +18,11 @@ spring:
             - StripPrefix=1 # removes '/auth' from the forwarded request
             - RemoveRequestHeader=Origin   # <--- This removes the Origin header
 
+  data:
+    redis:
+      host: localhost
+      port: 16379
+
 
 logging:
   level:
