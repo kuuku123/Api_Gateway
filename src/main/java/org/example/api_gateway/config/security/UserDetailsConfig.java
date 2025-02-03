@@ -19,7 +19,7 @@ public class UserDetailsConfig {
     MapReactiveUserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
         var user = User.builder()
                 .username("tony")
-                .password(passwordEncoder().encode("password"))
+                .password(passwordEncoder.encode("password"))
                 .roles("USER")
                 .build();
         return new MapReactiveUserDetailsService(user);

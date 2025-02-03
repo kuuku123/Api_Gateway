@@ -1,4 +1,4 @@
-package org.example.api_gateway.config.security;
+package org.example.api_gateway.config.security.jwt;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;

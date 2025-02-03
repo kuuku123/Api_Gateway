@@ -1,4 +1,4 @@
-package org.example.api_gateway.config.security;
+package org.example.api_gateway.config.security.jwt;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;

@@ -1,4 +1,4 @@
-package org.example.api_gateway.config.security;
+package org.example.api_gateway.config.security.jwt;
 
 import org.springframework.security.core.userdetails.UserDetails;
 
