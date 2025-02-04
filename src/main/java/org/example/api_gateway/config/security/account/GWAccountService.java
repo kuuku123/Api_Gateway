@@ -2,6 +2,7 @@ package org.example.api_gateway.config.security.account;
 
 import lombok.RequiredArgsConstructor;
 import org.example.api_gateway.config.security.LoginForm;
+import org.example.api_gateway.config.security.jwt.JwtService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -13,6 +14,7 @@ public class GWAccountService {
 
   private final GWAccountRepository gwAccountRepository;
   private final PasswordEncoder passwordEncoder;
+  private final JwtService jwtService;
 
 
   public Mono<GWAccount> saveGWAccount(LoginForm loginForm) {
@@ -20,16 +22,12 @@ public class GWAccountService {
       GWAccount gwAccount = new GWAccount();
       gwAccount.setEmail(loginForm.getEmail());
       gwAccount.setPassword(passwordEncoder.encode(loginForm.getPassword()));
-
       return gwAccountRepository.save(gwAccount);  // Blocking call
     }).subscribeOn(Schedulers.boundedElastic());  // Offload to separate thread pool
   }
 
   public Mono<GWAccount> getGWAccount(String email) {
-    return Mono.defer(() -> {
-      GWAccount byEmail = gwAccountRepository.findByEmail(email);
-      return byEmail != null ? Mono.just(byEmail) : Mono.empty();
-    }).subscribeOn(Schedulers.boundedElastic()); // Offload blocking call
+    return Mono.fromCallable(() -> gwAccountRepository.findByEmail(email))
+        .subscribeOn(Schedulers.boundedElastic()); // Offload blocking call
   }
-
 }
