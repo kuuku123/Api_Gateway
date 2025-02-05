@@ -27,12 +27,6 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
 
     implementation 'org.springframework.cloud:spring-cloud-starter-gateway'
-    implementation 'org.springframework.session:spring-session-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
-    implementation 'org.springframework.security:spring-security-oauth2-client:6.4.2'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa:3.4.2'
-    implementation 'com.mysql:mysql-connector-j:9.2.0'
 
     // https://mvnrepository.com/artifact/org.projectlombok/lombok
     compileOnly 'org.projectlombok:lombok'

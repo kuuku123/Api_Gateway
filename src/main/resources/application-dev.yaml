@@ -17,11 +17,14 @@ spring:
           filters:
             - StripPrefix=1 # removes '/auth' from the forwarded request
             - RemoveRequestHeader=Origin   # <--- This removes the Origin header
+        - id: app-service
+          uri: http://localhost:8081
+          predicates:
+            - Path=/app/**
+          filters:
+            - StripPrefix=1 # removes '/auth' from the forwarded request
+            - RemoveRequestHeader=Origin   # <--- This removes the Origin header
 
-  data:
-    redis:
-      host: localhost
-      port: 16379
 
 
 logging:
@@ -38,4 +41,4 @@ server:
 
 jwt:
   secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
-  expiration_time: 999999999
+  expiration_time: 1000000
