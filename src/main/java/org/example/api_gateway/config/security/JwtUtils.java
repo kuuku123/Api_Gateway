@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
 import java.security.Key;
 import java.security.PublicKey;
 import java.time.ZonedDateTime;
@@ -62,7 +63,7 @@ public class JwtUtils {
         Claims payload = null;
         try {
             JwtParser jwtParser = Jwts.parser()
-                    .verifyWith((PublicKey) key).build();
+                    .verifyWith((SecretKey) key).build();
             payload = jwtParser.parseSignedClaims(token).getPayload();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
