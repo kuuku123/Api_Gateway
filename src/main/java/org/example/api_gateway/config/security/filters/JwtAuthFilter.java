@@ -1,5 +1,6 @@
 package org.example.api_gateway.config.security.filters;
 
+import java.util.regex.Pattern;
 import lombok.RequiredArgsConstructor;
 import org.example.api_gateway.config.security.JwtUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -22,9 +23,10 @@ import java.util.Set;
 public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private final JwtUtils jwtUtils;
-    private final Set<String> excludedPaths = Set.of(
-            "/auth/sign-up",
-            "/auth/login"
+    private final List<Pattern> excludedPatterns = List.of(
+        Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE)
     );
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
@@ -79,7 +81,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     }
 
     private boolean isExcludedPath(String path) {
-        return excludedPaths.stream()
-                .anyMatch(excluded -> excluded.equalsIgnoreCase(path));
+        return excludedPatterns.stream()
+            .anyMatch(pattern -> pattern.matcher(path).matches());
     }
 }
