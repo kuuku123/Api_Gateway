@@ -12,20 +12,24 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
 public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private final JwtUtils jwtUtils;
-
-    // You can inject a JWT validation utility/service here if needed
-
+    private final Set<String> excludedPaths = Set.of(
+            "/auth/sign-up",
+            "/auth/login"
+    );
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
-        if (path.equalsIgnoreCase("/auth/sign-up")) {
+        if (isExcludedPath(path)) {
             return chain.filter(exchange);
         }
 
@@ -72,5 +76,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     @Override
     public int getOrder() {
         return -1;  // Ensure this filter runs early in the chain
+    }
+
+    private boolean isExcludedPath(String path) {
+        return excludedPaths.stream()
+                .anyMatch(excluded -> excluded.equalsIgnoreCase(path));
     }
 }
