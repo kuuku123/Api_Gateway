@@ -6,17 +6,17 @@ import org.example.api_gateway.config.security.JwtUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
 import org.springframework.cloud.gateway.filter.GlobalFilter;
 import org.springframework.core.Ordered;
+import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 @Component
 @RequiredArgsConstructor
@@ -24,6 +24,7 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private final JwtUtils jwtUtils;
     private final List<Pattern> excludedPatterns = List.of(
+      Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
         Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
         Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
         Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE)
@@ -35,44 +36,46 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             return chain.filter(exchange);
         }
 
-        HttpHeaders headers = exchange.getRequest().getHeaders();
-        String authHeader = headers.getFirst(HttpHeaders.AUTHORIZATION);
+        // Attempt to retrieve the access token from the cookies
+        MultiValueMap<String, HttpCookie> cookies = exchange.getRequest().getCookies();
+        HttpCookie tokenCookie = cookies.getFirst("accessToken"); // The cookie name you used when setting it
 
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+        // You can still optionally check the Authorization header if needed:
+        String authHeader = exchange.getRequest().getHeaders().getFirst(HttpHeaders.AUTHORIZATION);
+        if (tokenCookie == null && authHeader != null && authHeader.startsWith("Bearer ")) {
+            // Fallback to header if cookie isn't present.
             String jwt = authHeader.substring(7);
-
-            // Validate the JWT. You might use a library like jjwt, nimbus-jose-jwt, etc.
-            // For demonstration, assume a method validateAndParseJwt() that returns a Map of claims
-            try {
-                // Replace this with your actual JWT parsing and validation logic
-                // For example:
-                // Map<String, Object> claims = jwtService.validateAndParseJwt(jwt);
-                Map<String, Object> claims = jwtUtils.parseClaims(jwt);
-
-                // Add claim values as headers, e.g., email, roles, etc.
-                // This way, the downstream app server gets these details directly.
-                ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                        .header("X-User-Email", claims.get("email").toString())
-                        // You can add more headers as needed:
-                        // .header("X-User-Roles", claims.get("roles").toString())
-                        .build();
-
-                ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
-
-                return chain.filter(mutatedExchange);
-            } catch (Exception e) {
-                // If JWT validation fails, you can either stop the chain or let it pass with an error
-                e.printStackTrace();
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
-            }
+            return processJwt(exchange, chain, jwt);
         }
 
-        // If no JWT is present or not in the expected format, you can decide to either
-        // continue (if the endpoint is public) or reject the request.
-        // For this example, we assume unauthorized.
+        if (tokenCookie != null) {
+            String jwt = tokenCookie.getValue();
+            return processJwt(exchange, chain, jwt);
+        }
+
+        // No token found either in cookies or header; reject the request
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         return exchange.getResponse().setComplete();
+    }
+
+    private Mono<Void> processJwt(ServerWebExchange exchange, GatewayFilterChain chain, String jwt) {
+        try {
+            // Validate and parse the JWT (replace with your actual implementation)
+            Map<String, Object> claims = jwtUtils.parseClaims(jwt);
+
+            // For example, add claims to request headers so that downstream services can use them
+            ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+              .header("X-User-Email", claims.get("email").toString())
+              // Optionally add more headers like roles, etc.
+              .build();
+
+            ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
+            return chain.filter(mutatedExchange);
+        } catch (Exception e) {
+            e.printStackTrace();
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
     }
 
     @Override
