@@ -1,0 +1,51 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "http://tonylimtest123.duckdns.org"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: true
+
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8084
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1 # removes '/auth' from the forwarded request
+            - RemoveRequestHeader=Origin   # <--- This removes the Origin header
+        - id: study-service
+          uri: http://study-service:8081
+          predicates:
+            - Path=/app/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
+        - id: notification-service
+          uri: http://notification-service:8082
+          predicates:
+            - Path=/noti/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
+
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        cloud:
+          gateway: DEBUG
+
+
+server:
+  port: 8083
+
+jwt:
+  secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
+  expiration_time: 1000000
