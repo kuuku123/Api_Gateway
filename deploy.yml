@@ -1,0 +1,8 @@
+services:
+  app:
+    image: kuuku123/api-gateway:latest
+    ports:
+      - "8083:8083" # Map container port to host
+    environment:
+      SPRING_PROFILES_ACTIVE: prod # Set the Spring profile
+
