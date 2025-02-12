@@ -4,7 +4,7 @@ spring:
       globalcors:
         corsConfigurations:
           '[/**]':
-            allowedOrigins: "http://tonylimtest123.duckdns.org"
+            allowedOrigins: "https://tonylimtest123.duckdns.org"
             allowedMethods: "*"
             allowedHeaders: "*"
             allowCredentials: true
@@ -45,6 +45,12 @@ logging:
 
 server:
   port: 8083
+  ssl:
+    enabled: true
+    key-store: classpath:keystore.p12
+    key-store-password: 1234
+    key-store-type: PKCS12
+    key-alias: tomcat
 
 jwt:
   secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
