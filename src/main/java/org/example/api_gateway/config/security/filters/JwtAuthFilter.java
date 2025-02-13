@@ -27,7 +27,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
       Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
         Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
         Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE)
+        Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE),
+        Pattern.compile("^/auth/login/oauth2/code/google.*", Pattern.CASE_INSENSITIVE)
     );
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
