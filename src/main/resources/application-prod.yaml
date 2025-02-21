@@ -31,6 +31,13 @@ spring:
           filters:
             - StripPrefix=1
             - RemoveRequestHeader=Origin
+        - id: notification-service-ws
+          uri: ws://notification-service:8082
+          predicates:
+            - Path=/ws/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
 
 
 

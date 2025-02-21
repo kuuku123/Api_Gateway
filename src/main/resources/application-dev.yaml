@@ -27,7 +27,14 @@ spring:
         - id: notification-service
           uri: http://localhost:8082
           predicates:
-            - Path=/noti/**,/chat/**
+            - Path=/noti/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
+        - id: notification-service-ws
+          uri: ws://localhost:8082
+          predicates:
+            - Path=/ws/**
           filters:
             - StripPrefix=1
             - RemoveRequestHeader=Origin
