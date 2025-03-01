@@ -54,10 +54,12 @@ server:
   port: 8083
   ssl:
     enabled: true
-    key-store: classpath:keystore.p12
+#    key-store: classpath:keystore.p12
+    key-store: classpath:armkeystore.p12
     key-store-password: 1234
     key-store-type: PKCS12
-    key-alias: tomcat
+    key-alias: armtomcat
+#    key-alias: tomcat
 
 jwt:
   secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
