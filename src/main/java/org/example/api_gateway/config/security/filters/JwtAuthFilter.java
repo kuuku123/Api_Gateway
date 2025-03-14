@@ -1,6 +1,7 @@
 package org.example.api_gateway.config.security.filters;
 
 import java.util.regex.Pattern;
+
 import lombok.RequiredArgsConstructor;
 import org.example.api_gateway.config.security.JwtUtils;
 import org.springframework.cloud.gateway.filter.GatewayFilterChain;
@@ -24,12 +25,15 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private final JwtUtils jwtUtils;
     private final List<Pattern> excludedPatterns = List.of(
-      Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE),
-        Pattern.compile("^/auth/login/oauth2/code/google.*", Pattern.CASE_INSENSITIVE)
+            Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/auth/login/oauth2/code/google.*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/app/total-study.*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/app/get-study-by-tags-and-zones.*", Pattern.CASE_INSENSITIVE)
     );
+
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
         String path = exchange.getRequest().getURI().getPath();
@@ -66,9 +70,9 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
             // For example, add claims to request headers so that downstream services can use them
             ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-              .header("X-User-Email", claims.get("email").toString())
-              // Optionally add more headers like roles, etc.
-              .build();
+                    .header("X-User-Email", claims.get("email").toString())
+                    // Optionally add more headers like roles, etc.
+                    .build();
 
             ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
             return chain.filter(mutatedExchange);
@@ -86,6 +90,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
 
     private boolean isExcludedPath(String path) {
         return excludedPatterns.stream()
-            .anyMatch(pattern -> pattern.matcher(path).matches());
+                .anyMatch(pattern -> pattern.matcher(path).matches());
     }
 }
