@@ -31,7 +31,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/login/oauth2/code/google.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/app/total-study.*", Pattern.CASE_INSENSITIVE),
-            Pattern.compile("^/app/get-study-by-tags-and-zones.*", Pattern.CASE_INSENSITIVE)
+            Pattern.compile("^/app/get-study-by-tags-and-zones.*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/app/get-study.*", Pattern.CASE_INSENSITIVE)
     );
 
     @Override
