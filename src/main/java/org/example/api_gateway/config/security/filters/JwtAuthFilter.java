@@ -28,6 +28,8 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
             Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/auth/check-and-make-email-verification-code$", Pattern.CASE_INSENSITIVE),
+            Pattern.compile("^/auth/verify-email$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/login/oauth2/code/google.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/app/total-study.*", Pattern.CASE_INSENSITIVE),
