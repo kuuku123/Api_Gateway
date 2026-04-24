@@ -69,6 +69,10 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     private Mono<Void> processJwt(ServerWebExchange exchange, GatewayFilterChain chain, String jwt) {
         try {
             // Validate and parse the JWT (replace with your actual implementation)
+            if (!jwtUtils.validateToken(jwt)) {
+                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                return exchange.getResponse().setComplete();
+            }
             Map<String, Object> claims = jwtUtils.parseClaims(jwt);
 
             // For example, add claims to request headers so that downstream services can use them
