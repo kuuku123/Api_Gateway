@@ -62,5 +62,4 @@ server:
 #    key-alias: tomcat
 
 jwt:
-  secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
-  expiration_time: 1000000
+  public-key: ${JWT_PUBLIC_KEY}

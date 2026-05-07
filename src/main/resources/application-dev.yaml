@@ -54,5 +54,13 @@ server:
   port: 8083
 
 jwt:
-  secret: tonylimkeytonylimkeytonylimkeytonylimkeytonylimkey
-  expiration_time: 1000000
+  public-key: |
+    -----BEGIN PUBLIC KEY-----
+    MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAlnVIoAz6kmuPTseeUdTC
+    YyyAYoap11UIHwb8IabmEmAXqAhBiHgEVDUYylfcrMnYnePCKgdJgJxafRrC0z03
+    aTMbT6hG/f8JWg4ceOWND0S0jQvv6LYs2yAEiCe7jxTYB5Bdq54d/4AdE8hJU/K7
+    G/RU4h7WgZRf5QQurNJJrkGWePIk4ojWMTl9leleVBn9ao6IMoawCT6yZtK0xJoc
+    oeFj26PCpppTs23X4l+SLLmKO8yamReMITVFlVLeWPlgsLtnucl+JIYTQ8UPQ4au
+    CgyhcybMXDoIFXAsGTQj9FvPEXYc8v38I7u86PAdAjKy8noJYG0X1xyr6tJweky2
+    EwIDAQAB
+    -----END PUBLIC KEY-----

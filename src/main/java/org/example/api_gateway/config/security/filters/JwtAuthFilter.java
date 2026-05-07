@@ -17,7 +17,6 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 import java.util.List;
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
@@ -27,7 +26,6 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     private final List<Pattern> excludedPatterns = List.of(
             Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/sign-up$", Pattern.CASE_INSENSITIVE),
-            Pattern.compile("^/auth/login$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/check-and-make-email-verification-code$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/verify-email$", Pattern.CASE_INSENSITIVE),
             Pattern.compile("^/auth/oauth2/authorization/google.*", Pattern.CASE_INSENSITIVE),
@@ -67,27 +65,19 @@ public class JwtAuthFilter implements GlobalFilter, Ordered {
     }
 
     private Mono<Void> processJwt(ServerWebExchange exchange, GatewayFilterChain chain, String jwt) {
-        try {
-            // Validate and parse the JWT (replace with your actual implementation)
-            if (!jwtUtils.validateToken(jwt)) {
-                exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
-                return exchange.getResponse().setComplete();
-            }
-            Map<String, Object> claims = jwtUtils.parseClaims(jwt);
-
-            // For example, add claims to request headers so that downstream services can use them
-            ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
-                    .header("X-User-Email", claims.get("email").toString())
-                    // Optionally add more headers like roles, etc.
-                    .build();
-
-            ServerWebExchange mutatedExchange = exchange.mutate().request(mutatedRequest).build();
-            return chain.filter(mutatedExchange);
-        } catch (Exception e) {
-            e.printStackTrace();
+        // Single parse — null means the token is invalid or expired
+        io.jsonwebtoken.Claims claims = jwtUtils.parseClaims(jwt);
+        if (claims == null) {
             exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
             return exchange.getResponse().setComplete();
         }
+
+        // Forward user identity to downstream services via a trusted header
+        ServerHttpRequest mutatedRequest = exchange.getRequest().mutate()
+                .header("X-User-Email", claims.get("email").toString())
+                .build();
+
+        return chain.filter(exchange.mutate().request(mutatedRequest).build());
     }
 
     @Override
