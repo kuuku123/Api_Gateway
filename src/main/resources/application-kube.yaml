@@ -1,0 +1,69 @@
+spring:
+  cloud:
+    gateway:
+      globalcors:
+        corsConfigurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedMethods: "*"
+            allowedHeaders: "*"
+            allowCredentials: false
+
+      routes:
+        - id: auth-service
+          uri: http://auth-service:8084
+          predicates:
+            - Path=/auth/**
+          filters:
+            - StripPrefix=1 # removes '/auth' from the forwarded request
+            - RemoveRequestHeader=Origin
+        - id: app-service
+          uri: http://study-service:8081
+          predicates:
+            - Path=/app/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
+        - id: notification-service
+          uri: http://notification-service:8082
+          predicates:
+            - Path=/noti/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
+        - id: notification-service-ws
+          uri: ws://notification-service:8082
+          predicates:
+            - Path=/ws/**
+          filters:
+            - StripPrefix=1
+            - RemoveRequestHeader=Origin
+
+
+
+logging:
+  level:
+    org:
+      springframework:
+        security: DEBUG
+        cloud:
+          gateway: DEBUG
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus
+  endpoint:
+    prometheus:
+      enabled: true
+  metrics:
+    tags:
+      application: api-gateway
+
+server:
+  port: 8083
+
+jwt:
+  public-key: ${JWT_PUBLIC_KEY}

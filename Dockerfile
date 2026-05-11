@@ -11,5 +11,5 @@ COPY build/libs/api-gateway.jar /app/api-gateway.jar
 EXPOSE 8083
 
 # Run the application with the prod profile
-CMD ["java", "-jar", "api-gateway.jar", "--spring.profiles.active=prod"]
+CMD ["java", "-jar", "api-gateway.jar"]
 
